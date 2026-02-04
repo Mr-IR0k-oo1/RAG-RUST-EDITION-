@@ -1,0 +1,15 @@
+[qdrant]
+url = "http://localhost:6333"
+api_key = ""
+timeout_secs = 30
+
+[collection]
+name = "pdf_documents"
+vector_size = 384
+distance_metric = "cosine"
+on_disk = true
+
+[indexing]
+hnsw_m = 16
+hnsw_ef_construct = 200
+hnsw_ef_search = 200

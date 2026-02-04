@@ -1,0 +1,15 @@
+[embedding]
+model = "sentence-transformers/all-MiniLM-L6-v2"
+dimension = 384
+endpoint = "http://localhost:8000"
+timeout_secs = 30
+
+[batch]
+size = 32
+max_retries = 3
+retry_delay_ms = 1000
+
+[cache]
+enabled = true
+max_size_mb = 1024
+ttl_secs = 86400

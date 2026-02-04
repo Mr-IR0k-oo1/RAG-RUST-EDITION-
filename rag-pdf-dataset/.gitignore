@@ -1,0 +1,34 @@
+# Rust
+target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+
+# Data
+data/raw/pdfs/*
+data/processed/**/*
+data/indexes/**/*
+!data/raw/pdfs/.gitkeep
+!data/processed/text/.gitkeep
+!data/processed/jsonl/.gitkeep
+!data/indexes/.gitkeep
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db

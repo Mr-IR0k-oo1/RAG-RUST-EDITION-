@@ -1,0 +1,30 @@
+[application]
+name = "rag-pdf-dataset"
+version = "0.1.0"
+environment = "development"
+log_level = "info"
+
+[processing]
+# Text chunking
+chunk_size = 512
+chunk_overlap = 128
+min_chunk_size = 50
+
+# Tokenization
+max_tokens = 1024
+remove_stop_words = false
+
+# Parallel processing
+max_workers = 4
+batch_size = 10
+
+[paths]
+raw_data_dir = "./data/raw"
+processed_data_dir = "./data/processed"
+indexes_dir = "./data/indexes"
+config_dir = "./configs"
+
+[output]
+format = "jsonl"
+compression = false
+include_metadata = true
