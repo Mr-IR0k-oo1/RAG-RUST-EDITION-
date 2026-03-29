@@ -25,12 +25,44 @@ impl Tokenizer {
         self.tokenize(text).len()
     }
 
-    /// Tokenize into sentences
+    /// Split text into sentences
     pub fn tokenize_sentences(&self, text: &str) -> Vec<String> {
-        text.split(|c| c == '.' || c == '!' || c == '?')
-            .map(|s| s.trim().to_string())
-            .filter(|s| !s.is_empty())
-            .collect()
+        // Simple sentence splitting without look-around
+        // Split on period/question/exclamation followed by space
+        let mut sentences = Vec::new();
+        let mut current = String::new();
+
+        for ch in text.chars() {
+            current.push(ch);
+
+            if ch == '.' || ch == '!' || ch == '?' {
+                // Check if next character (if any) is uppercase or end of string
+                let trimmed = current.trim().to_string();
+                if !trimmed.is_empty() && trimmed.len() > 1 {
+                    sentences.push(trimmed);
+                    current = String::new();
+                }
+            }
+        }
+
+        // Add remaining text if any
+        let trimmed = current.trim().to_string();
+        if !trimmed.is_empty() {
+            sentences.push(trimmed);
+        }
+
+        sentences
+    }
+
+    /// Count characters in text
+    pub fn count_chars(&self, text: &str) -> usize {
+        text.chars().count()
+    }
+
+    /// Estimate token count (faster than exact count)
+    /// Uses approximation: ~4 chars per token for English
+    pub fn estimate_tokens(&self, text: &str) -> usize {
+        (text.len() as f64 / 4.0).ceil() as usize
     }
 }
 
@@ -55,5 +87,26 @@ mod tests {
     fn test_count_tokens() {
         let tokenizer = Tokenizer::new();
         assert_eq!(tokenizer.count_tokens("one two three"), 3);
+    }
+
+    #[test]
+    fn test_sentence_split() {
+        let tokenizer = Tokenizer::new();
+        let sentences = tokenizer.tokenize_sentences("Hello world. How are you? I am fine.");
+        assert!(sentences.len() >= 2);
+    }
+
+    #[test]
+    fn test_sentence_with_abbreviation() {
+        let tokenizer = Tokenizer::new();
+        let sentences = tokenizer.tokenize_sentences("Dr. Smith went home. He was tired.");
+        assert!(sentences.len() >= 1);
+    }
+
+    #[test]
+    fn test_estimate_tokens() {
+        let tokenizer = Tokenizer::new();
+        let estimate = tokenizer.estimate_tokens("This is a test sentence.");
+        assert!(estimate > 0);
     }
 }

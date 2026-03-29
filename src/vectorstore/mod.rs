@@ -1,3 +1,3 @@
 pub mod qdrant;
 
-pub use qdrant::QdrantStore;
+pub use qdrant::{QdrantStore, SearchResult};

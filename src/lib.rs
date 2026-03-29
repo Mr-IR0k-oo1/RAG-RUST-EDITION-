@@ -6,11 +6,3 @@ pub mod vectorstore;
 pub mod rag;
 pub mod utils;
 pub mod types;
-pub mod cli;
-
-use anyhow::Result;
-
-#[tokio::main]
-async fn main() -> Result<()> {
-    cli::run().await
-}

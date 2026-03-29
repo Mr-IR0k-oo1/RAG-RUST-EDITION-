@@ -128,11 +128,9 @@ impl DatasetGenerator {
         let mut chat_entries = Vec::new();
 
         for chunk in chunks {
-            // Generate Q&A pairs from chunk
             let qa_pairs_chunk = self.generate_qa_pairs(chunk);
 
             for qa in &qa_pairs_chunk {
-                // Instruction format
                 instructions.push(InstructionEntry {
                     instruction: qa.question.clone(),
                     input: Some(qa.context.clone()),
@@ -141,7 +139,6 @@ impl DatasetGenerator {
                     chunk_id: Some(chunk.id.clone()),
                 });
 
-                // Q&A format
                 qa_pairs.push(QAEntry {
                     question: qa.question.clone(),
                     answer: qa.answer.clone(),
@@ -155,7 +152,6 @@ impl DatasetGenerator {
                     }),
                 });
 
-                // Chat format
                 chat_entries.push(ChatEntry {
                     messages: vec![
                         ChatMessage {
@@ -185,25 +181,29 @@ impl DatasetGenerator {
     /// Generate Q&A pairs from a chunk
     fn generate_qa_pairs(&self, chunk: &crate::ingestion::Chunk) -> Vec<QAPair> {
         let mut pairs = Vec::new();
-        let content = &chunk.content;
+        let content: &String = &chunk.content;
 
-        // Generate factual questions based on content analysis
         let sentences: Vec<&str> = content.split(". ").collect();
 
-        for (i, sentence) in sentences.iter().enumerate() {
+        for (i, sentence_ref) in sentences.iter().enumerate() {
+            let sentence: &str = sentence_ref;
             if sentence.len() < 20 {
                 continue;
             }
 
-            // Extract key terms for question generation
             let words: Vec<&str> = sentence.split_whitespace().collect();
 
             if words.len() > 5 {
-                // Generate "What is X?" style question
-                if let Some(term) = words
-                    .iter()
-                    .find(|w| w.len() > 4 && w.starts_with(char::is_uppercase))
-                {
+                let mut found_term: Option<&str> = None;
+                for word in words.iter() {
+                    let w: &str = word;
+                    if w.len() > 4 && w.starts_with(char::is_uppercase) {
+                        found_term = Some(w);
+                        break;
+                    }
+                }
+
+                if let Some(term) = found_term {
                     pairs.push(QAPair {
                         question: format!("What is {}?", term),
                         answer: sentence.to_string(),
@@ -213,14 +213,15 @@ impl DatasetGenerator {
                     });
                 }
 
-                // Generate "Explain..." style question
                 if i == 0 && sentences.len() > 1 {
+                    let preview_words = &words[..std::cmp::min(5, words.len())];
+                    let explain_answer = sentences[..std::cmp::min(3, sentences.len())].join(". ");
                     pairs.push(QAPair {
                         question: format!(
                             "Explain the following concept: {}",
-                            words[..std::cmp::min(5, words.len())].join(" ")
+                            preview_words.join(" ")
                         ),
-                        answer: sentences[..std::cmp::min(3, sentences.len())].join(". "),
+                        answer: explain_answer,
                         context: content.clone(),
                         source: format!("chunk_{}", chunk.id),
                         question_type: "inferential".to_string(),
@@ -229,7 +230,6 @@ impl DatasetGenerator {
             }
         }
 
-        // Limit to configured number
         pairs.truncate(self.config.num_qa_pairs_per_chunk);
         pairs
     }
