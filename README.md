@@ -4,22 +4,25 @@ A Rust-based Retrieval-Augmented Generation (RAG) system for processing, embeddi
 
 ## Current Status
 
-> **Status:** Early Development (v0.2.0)  
-> **Implementation Progress:** ~40% complete
+> **Status:** Active Development (v0.2.0)  
+> **Implementation Progress:** ~70% complete
 
-This project is actively under development. The following features are implemented or in progress:
+This project is actively under development with significant recent updates. The following features are implemented or in progress:
 
 | Feature | Status |
 |---------|--------|
-| PDF/EPUB text extraction | Partial |
+| PDF text extraction | Done |
+| EPUB text extraction | Done |
 | Text cleaning & normalization | Done |
 | Text chunking (512 tokens, 12.5% overlap) | Done |
 | Tokenization | Done |
 | Embedding API client (HuggingFace) | Done |
-| Local embedding (placeholder) | Partial |
-| Qdrant vector store integration | In Progress |
-| RAG retrieval & re-ranking | Not Started |
-| Dataset generator (instruction/QA/chat formats) | Not Started |
+| Local embedding (Candle-based) | In Progress |
+| Qdrant vector store integration | Done |
+| RAG retrieval & re-ranking | In Progress |
+| Dataset generator (instruction/QA/chat formats) | Done |
+| CLI infrastructure | Done |
+| Comprehensive documentation | Done |
 | Scanned document OCR support | Not Started |
 
 ## Goal
@@ -37,13 +40,16 @@ The project aims to provide a fast, memory-efficient alternative to Python-based
 
 ## Features
 
-- Multi-format document support (PDF, EPUB)
-- Configurable text chunking with overlap
-- Batch embedding generation
-- Qdrant vector store integration
-- Multiple output formats for fine-tuning datasets
-- CLI-first design
-- Comprehensive logging and error handling
+- **Multi-format document support**: PDF and EPUB ingestion with full text extraction
+- **Advanced text processing**: Intelligent chunking (512 tokens with 12.5% overlap), cleaning, and tokenization
+- **Embedding generation**: HuggingFace API integration with batch processing
+- **Vector store**: Full Qdrant integration with semantic search capabilities
+- **Dataset generation**: Multiple output formats (instruction-tuning, Q&A, chat)
+- **Retrieval pipeline**: Advanced RAG retrieval with prompt building
+- **CLI-first design**: Modular command-line interface with multiple binaries
+- **Comprehensive documentation**: Architecture guides, API references, and deployment guides
+- **Async-first architecture**: Built on tokio for high performance
+- **Error handling**: Type-safe error handling with custom error types
 
 ## Project Structure
 
@@ -96,32 +102,34 @@ cargo build --release
 
 ### Ingest Documents
 
+Process PDF and EPUB files to extract text, chunk content, and generate embeddings:
+
 ```bash
 cargo run --bin ingest -- path/to/documents/
 ```
 
-### Query RAG System
+### Download Embedding Model
+
+Download or initialize the embedding model for local inference:
 
 ```bash
-cargo run --bin query -- "Your question here"
-```
-
-### Generate Fine-tuning Dataset
-
-```bash
-cargo run --bin generate
+cargo run --bin download_model
 ```
 
 ### Rebuild Vector Index
+
+Rebuild the Qdrant vector index from processed documents:
 
 ```bash
 cargo run --bin rebuild_index
 ```
 
-### View Statistics
+### Main CLI
+
+The main binary provides the core functionality:
 
 ```bash
-cargo run --bin stats
+cargo run -- --help
 ```
 
 ## Configuration
@@ -132,13 +140,26 @@ Configuration files are located in `configs/`:
 - `embedding.toml` - Embedding model configuration
 - `qdrant.toml` - Vector store configuration
 
+## Documentation
+
+Comprehensive documentation is available in the [Documents](./Documents/) folder:
+
+- **[ARCHITECTURE.md](./Documents/ARCHITECTURE.md)** - System architecture and component design
+- **[IMPLEMENTATION_PLAN.md](./Documents/IMPLEMENTATION_PLAN.md)** - Detailed implementation roadmap
+- **[API_REFERENCE.md](./Documents/API_REFERENCE.md)** - Complete API documentation
+- **[RAG_FUNDAMENTALS.md](./Documents/RAG_FUNDAMENTALS.md)** - RAG concepts and theory
+- **[FINE_TUNING_DATASETS.md](./Documents/FINE_TUNING_DATASETS.md)** - Dataset formats and generation
+- **[DEPLOYMENT_GUIDE.md](./Documents/DEPLOYMENT_GUIDE.md)** - Production deployment instructions
+
 ## Contributing
 
 Contributions are welcome! This project is open to:
 
 - Bug fixes and documentation improvements
 - New feature implementations (OCR support, additional document formats)
-- Performance optimizations
+- Local embedding model optimizations (Candle)
+- RAG retrieval and re-ranking enhancements
+- Performance optimizations and benchmarking
 - Test coverage improvements
 - Example use cases and tutorials
 
@@ -152,14 +173,12 @@ Contributions are welcome! This project is open to:
 
 ### Areas Needing Contribution
 
-- Qdrant integration completion
-- Local embedding model support (candle-based)
+- Local embedding model support improvements (Candle-based)
+- RAG retrieval and re-ranking optimization
 - OCR support for scanned documents
-- RAG retrieval and re-ranking implementation
-- Dataset generator for fine-tuning
 - Additional document format support
-
-Please read the [Documents](./Documents/) folder for architecture details and implementation plans.
+- Performance benchmarking and optimization
+- Extended test coverage
 
 ## Testing
 
